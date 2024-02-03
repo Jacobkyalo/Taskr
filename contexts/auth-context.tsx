@@ -1,21 +1,61 @@
 "use client";
 
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ID } from "appwrite";
 import { account } from "@/lib/appwrite.config";
 import { toast } from "@/components/ui/use-toast";
+export interface UserProps {
+  $id?: string;
+  $createdAt?: string;
+  $updatedAt?: string;
+  name?: string;
+  password?: string;
+  hash?: string;
+  hashOptions?: {
+    type?: string;
+    memoryCost?: number;
+    timeCost?: number;
+    threads?: number;
+  };
+  labels?: string[];
+  passwordUpdate?: string;
+  phone?: string;
+  emailVerification?: boolean;
+  phoneVerification?: boolean;
+  prefs?: {};
+  accessedAt?: string;
+  email?: string;
+  registration?: string;
+  status?: boolean;
+}
 
-export const AuthContext = createContext(null);
+export interface AuthContextProps {
+  user: UserProps;
+  loading: false;
+  signupUser: (email: string, password: string, name: string) => {};
+  loginUser: (email: string, password: string) => {};
+  logoutUser: () => {};
+  createPasswordRecovery: (email: string) => {};
+  updatePasswordRecovery: (
+    userId: string,
+    secret: string,
+    password: string,
+    passwordAgain: string
+  ) => {};
+}
+
+export const AuthContext = createContext<AuthContextProps>(
+  {} as AuthContextProps
+);
 
 export default function AuthProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(false);
-  // const toast = useToast();
+  const [user, setUser] = useState<UserProps>();
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const signupUser = async (email: string, password: string, name: string) => {
@@ -25,7 +65,7 @@ export default function AuthProvider({
       setLoading(false);
       await account.createEmailSession(email, password);
 
-      let accountDetails = await account.get();
+      let accountDetails: UserProps = await account.get();
       setUser(accountDetails);
 
       toast({
@@ -44,95 +84,133 @@ export default function AuthProvider({
     }
   };
 
-  // const loginUser = async (email, password) => {
-  //   try {
-  //     setLoading(true);
-  //     await account.createEmailSession(email, password);
-  //     setLoading(false);
+  const loginUser = async (email: string, password: string) => {
+    try {
+      setLoading(true);
+      await account.createEmailSession(email, password);
+      setLoading(false);
 
-  //     let accountDetails = await account.get();
-  //     setUser(accountDetails);
+      let accountDetails = await account.get();
+      setUser(accountDetails);
 
-  //     toast.success("Login successful");
-  //     navigate("/");
-  //   } catch (error) {
-  //     toast.error(error.message);
-  //     setLoading(false);
-  //   }
-  // };
+      toast({
+        title: "Success!",
+        description: "Login successful",
+      });
+      router.push("/dashboard");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // const logoutUser = async () => {
-  //   try {
-  //     setLoading(true);
-  //     await account.deleteSession("current");
-  //     setLoading(false);
-  //     setUser(null);
-  //     localStorage.removeItem("cookieFallback");
+  const logoutUser = async () => {
+    try {
+      setLoading(true);
+      await account.deleteSession("current");
+      setLoading(false);
+      setUser({} as UserProps);
+      localStorage.removeItem("cookieFallback");
 
-  //     toast.success("Logout successful");
-  //     navigate("/auth/login");
-  //   } catch (error) {
-  //     toast.error(error.message);
-  //     setLoading(false);
-  //   }
-  // };
+      toast({
+        title: "Success!",
+        description: "Logout successful",
+      });
+      router.push("/login");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // const persistUser = async () => {
-  //   try {
-  //     let accountDetails = await account.get();
-  //     setUser(accountDetails);
-  //   } catch (error) {
-  //     toast.error(error.message);
-  //   }
-  // };
+  const persistUser = async () => {
+    try {
+      let accountDetails = await account.get();
+      setUser(accountDetails);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message,
+      });
+    }
+  };
 
-  // const createPasswordRecovery = async (email) => {
-  //   try {
-  //     setLoading(true);
-  //     await account.createRecovery(
-  //       email,
-  //       "https://ic-chatroom.vercel.app/account/reset-password",
-  //     );
-  //     setLoading(false);
+  const createPasswordRecovery = async (email: string) => {
+    try {
+      setLoading(true);
+      await account.createRecovery(
+        email,
+        process.env.NEXT_PUBLIC_URI_PARAM ?? ""
+      );
+      setLoading(false);
 
-  //     toast.success("Password recovery email sent to your email inbox or spam");
-  //     navigate("/auth/login");
-  //   } catch (error) {
-  //     toast.error(error.message);
-  //     setLoading(false);
-  //   }
-  // };
+      toast({
+        title: "Success!",
+        description:
+          "Password recovery email sent to your email inbox or spam folder",
+      });
+      router.push("/login");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // const updatePasswordRecovery = async (
-  //   userId,
-  //   secret,
-  //   password,
-  //   passwordAgain,
-  // ) => {
-  //   try {
-  //     setLoading(true);
-  //     await account.updateRecovery(userId, secret, password, passwordAgain);
-  //     setLoading(false);
+  const updatePasswordRecovery = async (
+    userId: string,
+    secret: string,
+    password: string,
+    passwordAgain: string
+  ) => {
+    try {
+      setLoading(true);
+      await account.updateRecovery(userId, secret, password, passwordAgain);
+      setLoading(false);
 
-  //     toast.success("Password reset successfully");
-  //     navigate("/auth/login");
-  //   } catch (error) {
-  //     toast.error(error.message);
-  //     setLoading(false);
-  //   }
-  // };
+      toast({
+        title: "Success!",
+        description: "Password reset successfully",
+      });
+      router.push("/login");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // useEffect(() => {
-  //   persistUser();
-  // }, []);
+  useEffect(() => {
+    persistUser();
+  }, []);
 
   const values: any = {
     user,
+    loading,
     signupUser,
-    // loginUser,
-    // logoutUser,
-    // createPasswordRecovery,
-    // updatePasswordRecovery,
+    loginUser,
+    logoutUser,
+    createPasswordRecovery,
+    updatePasswordRecovery,
   };
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
