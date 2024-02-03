@@ -8,8 +8,9 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Taskr - A Ultimate Task Management Solution",
-  description: "Taskr is a task management solution for your projects",
+  title: "Taskr - The Ultimate Task Management Solution",
+  description:
+    "Taskr is a task management solution for your projects and daily activities",
 };
 
 export default function RootLayout({
