@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import Container from "@/components/container";
 
 import resetPassword from "@/assets/images/new-password.svg";
+import useAuth from "@/hooks/useAuth";
 
 const formSchema = z.object({
   password: z.string().min(8, {
@@ -29,6 +30,12 @@ const formSchema = z.object({
 });
 
 export default function ResetPassword() {
+  const { loading, updatePasswordRecovery } = useAuth();
+  const searchParams: ReadonlyURLSearchParams = useSearchParams();
+
+  const userId: string = searchParams.get("userId") ?? "";
+  const secret: string = searchParams.get("secret") ?? "";
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,7 +45,7 @@ export default function ResetPassword() {
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+    updatePasswordRecovery(userId, secret, data.password, data.confirmPassword);
   };
 
   return (
@@ -110,8 +117,9 @@ export default function ResetPassword() {
                   className="w-full"
                   size="lg"
                   variant="destructive"
+                  disabled={loading}
                 >
-                  Reset Password
+                  {loading ? "Loading..." : "Reset Password"}
                 </Button>
               </form>
             </Form>

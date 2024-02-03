@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import Container from "@/components/container";
 
 import forgotPassword from "@/assets/images/forgot-password.svg";
+import useAuth from "@/hooks/useAuth";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -26,6 +27,8 @@ const formSchema = z.object({
 });
 
 export default function ForgotPassword() {
+  const { loading, createPasswordRecovery } = useAuth();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,7 +37,7 @@ export default function ForgotPassword() {
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+    createPasswordRecovery(data.email);
   };
 
   return (
@@ -87,8 +90,9 @@ export default function ForgotPassword() {
                   className="w-full"
                   size="lg"
                   variant="destructive"
+                  disabled={loading}
                 >
-                  Get Reset Link
+                  {loading ? "Loading..." : "Get reset link"}
                 </Button>
 
                 <p className="text-muted-foreground text-sm">
