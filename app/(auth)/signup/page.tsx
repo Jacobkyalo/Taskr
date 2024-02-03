@@ -32,7 +32,8 @@ const formSchema = z.object({
 });
 
 export default function Signup() {
-  const { signupUser } = useAuth();
+  const { loading, signupUser } = useAuth();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,9 +43,8 @@ export default function Signup() {
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log(data);
-    await signupUser(data.email, data.password, data.name);
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    signupUser(data.email, data.password, data.name);
   };
 
   return (
@@ -127,8 +127,9 @@ export default function Signup() {
                 className="w-full"
                 size="lg"
                 variant="destructive"
+                disabled={loading}
               >
-                Get Started
+                {loading ? "Loading..." : "Get Started"}
               </Button>
 
               <p className="text-muted-foreground text-sm">

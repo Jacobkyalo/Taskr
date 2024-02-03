@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import tasks from "@/assets/images/tasks.svg";
+import useAuth from "@/hooks/useAuth";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -28,6 +31,8 @@ const formSchema = z.object({
 });
 
 export default function Login() {
+  const { user, loading, loginUser } = useAuth();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,8 +42,14 @@ export default function Login() {
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+    loginUser(data.email, data.password);
   };
+
+  useEffect(() => {
+    if (user) {
+      redirect("/dashboard");
+    }
+  }, [user]);
 
   return (
     <main className="container">
@@ -108,8 +119,9 @@ export default function Login() {
                 className="w-full"
                 size="lg"
                 variant="destructive"
+                disabled={loading}
               >
-                Login
+                {loading ? "Loading..." : "Login"}
               </Button>
 
               <p className="text-muted-foreground text-sm">
