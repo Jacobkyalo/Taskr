@@ -1,7 +1,19 @@
+"use client";
+
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { useEffect } from "react";
+import useAuth from "@/hooks/useAuth";
 
 export default function Homepage() {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      redirect("/dashboard");
+    }
+  });
   return (
     <section className="py-24 flex-col gap-y-4 w-full max-w-4xl mx-auto text-center flex justify-center items-center">
       <h2 className="text-4xl md:text-7xl font-bold">
