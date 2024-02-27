@@ -11,6 +11,21 @@ export const metadata: Metadata = {
   title: "Taskr - The Ultimate Task Management Solution",
   description:
     "Taskr is a task management solution for your projects and daily activities",
+  keywords: [
+    "task",
+    "management",
+    "project",
+    "todo",
+    "list",
+    "daily",
+    "activity",
+    "productivity",
+    "planning",
+    "task management",
+    "project management",
+    "taskr",
+    "Taskr",
+  ],
 };
 
 export default function RootLayout({
