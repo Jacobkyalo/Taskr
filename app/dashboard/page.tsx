@@ -72,6 +72,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { ThemeToggler } from "@/components/theme-toggler";
 
 const tags: string[] = ["documentation", "feature", "fix", "bug", "todo"];
 
@@ -284,17 +285,21 @@ export default function Dashboard() {
           </div>
           <Dialog>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Avatar className="cursor-pointer">
-                  <AvatarImage
-                    src="https://cdn-icons-png.flaticon.com/128/552/552848.png"
-                    alt={user?.name}
-                  />
-                  <AvatarFallback className="bg-destructive text-white">
-                    {sliceText(user?.name || "")}
-                  </AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
+              <div className="flex items-center gap-x-6">
+                <ThemeToggler />
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="cursor-pointer">
+                    <AvatarImage
+                      src="https://t4.ftcdn.net/jpg/04/62/63/65/360_F_462636502_9cDAYuyVvBY4qYJlHjW7vqar5HYS8h8x.jpg"
+                      alt={user?.name}
+                      className="text-muted"
+                    />
+                    <AvatarFallback className="bg-destructive text-white">
+                      {sliceText(user?.name || "")}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+              </div>
               <DropdownMenuContent className="w-fit relative right-10">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
