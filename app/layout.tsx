@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import PageNavbar from "@/components/page-navbar";
 import AuthProvider from "@/contexts/auth-context";
 import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -36,11 +37,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <AuthProvider>
-        <body className={inter.className}>
-          <PageNavbar />
-          {children}
-          <Toaster />
-        </body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <body className={inter.className}>
+            <PageNavbar />
+            {children}
+            <Toaster />
+          </body>
+        </ThemeProvider>
       </AuthProvider>
     </html>
   );
