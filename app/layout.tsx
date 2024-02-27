@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import PageNavbar from "@/components/page-navbar";
 import AuthProvider from "@/contexts/auth-context";
 import { Toaster } from "@/components/ui/toaster";
@@ -44,6 +45,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <body className={inter.className}>
+            <Analytics />
             <PageNavbar />
             {children}
             <Toaster />
