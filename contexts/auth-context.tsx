@@ -151,7 +151,9 @@ export default function AuthProvider({
       setLoading(true);
       await account.createRecovery(
         email,
-        process.env.NEXT_PUBLIC_URI_PARAM ?? ""
+        process.env.NEXT_PUBLIC_NODE_ENV === "production"
+          ? process.env.NEXT_PUBLIC_URI_PARAM_PRODUCTION || ""
+          : process.env.NEXT_PUBLIC_URI_PARAM_DEV || ""
       );
       setLoading(false);
 
