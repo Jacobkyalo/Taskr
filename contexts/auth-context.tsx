@@ -35,7 +35,7 @@ export interface AuthContextProps {
   loading: false;
   signupUser: (email: string, password: string, name: string) => {};
   loginUser: (email: string, password: string) => {};
-  logoutUser: () => {};
+  logoutUser: () => void;
   createPasswordRecovery: (email: string) => {};
   updatePasswordRecovery: (
     userId: string,
@@ -54,7 +54,7 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<UserProps>();
+  const [user, setUser] = useState<UserProps | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
@@ -114,8 +114,8 @@ export default function AuthProvider({
       setLoading(true);
       await account.deleteSession("current");
       setLoading(false);
-      setUser({} as UserProps);
       localStorage.removeItem("cookieFallback");
+      setUser(undefined); // Pass an empty value as an argument to setUser
 
       toast({
         title: "Success!",
@@ -200,7 +200,9 @@ export default function AuthProvider({
   };
 
   useEffect(() => {
-    persistUser();
+    if (localStorage.getItem("cookieFallback")) {
+      persistUser();
+    }
   }, []);
 
   const values: any = {
