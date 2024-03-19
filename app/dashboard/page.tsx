@@ -341,7 +341,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <span className="font-semibold tet-base mr-2">
-                  Member since:
+                  Account created on:
                 </span>
                 <span className="text-sm text-muted-foreground">
                   {new Date(user?.$createdAt ?? "").toDateString()}
